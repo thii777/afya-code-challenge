@@ -1,0 +1,25 @@
+version: "3.7"
+
+services:
+  # app:
+  #   build: 
+  #     context: .
+  #     dockerfile: Dockerfile.dev
+  #   command: npm run start:dev
+  #   ports:
+  #     - "3000:3000"
+  #   depends_on:
+  #     - db
+  #   volumes:
+  #     - .:/usr/app
+  db:
+    image: 'postgres:latest'
+    container_name: "t2-database"
+    environment:
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_DB: ${DATABASE_NAME}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+    volumes:
+      - /var/lib/postgresql
+    ports:
+      - "5432:5432"
