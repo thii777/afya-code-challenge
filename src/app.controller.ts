@@ -1,5 +1,5 @@
 import { Controller, Get } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AppService } from './app.service';
 
 @ApiTags('health-check')
@@ -7,8 +7,13 @@ import { AppService } from './app.service';
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
+  @ApiOperation({ summary: 'Status application' })
+  @ApiResponse({
+    status: 200,
+    description: '',
+  })
   @Get()
-  getHello(): string {
-    return this.appService.getHello();
+  healthCheck(): string {
+    return this.appService.healthCheck();
   }
 }
