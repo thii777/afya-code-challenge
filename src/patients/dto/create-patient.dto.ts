@@ -1,0 +1,86 @@
+import { ApiProperty } from '@nestjs/swagger';
+import {
+  IsDateString,
+  IsEmail,
+  IsNotEmpty,
+  IsPhoneNumber,
+} from 'class-validator';
+import {
+  CREATE_OR_UPDATE_PATIENT_NAME_DESCRIPTION,
+  CREATE_OR_UPDATE_PATIENT_NAME_EXAMPLE,
+  CREATE_OR_UPDATE_PATIENT_PHONE_DESCRIPTION,
+  CREATE_OR_UPDATE_PATIENT_PHONE_EXAMPLE,
+  CREATE_OR_UPDATE_PATIENT_EMAIL_DESCRIPTION,
+  CREATE_OR_UPDATE_PATIENT_EMAIL_EXAMPLE,
+  CREATE_OR_UPDATE_PATIENT_DOCUMENT_DESCRIPTION,
+  CREATE_OR_UPDATE_PATIENT_DOCUMENT_EXAMPLE,
+  CREATE_OR_UPDATE_PATIENT_BIRTHDAY_DESCRIPTION,
+  CREATE_OR_UPDATE_PATIENT_BIRTHDAY_EXAMPLE,
+  CREATE_OR_UPDATE_PATIENT_GENDER_DESCRIPTION,
+  CREATE_OR_UPDATE_PATIENT_GENDER_EXAMPLE,
+  CREATE_OR_UPDATE_PATIENT_HEIGHT_DESCRIPTION,
+  CREATE_OR_UPDATE_PATIENT_HEIGHT_EXAMPLE,
+  CREATE_OR_UPDATE_PATIENT_WEIGHT_DESCRIPTION,
+  CREATE_OR_UPDATE_PATIENT_WEIGHT_EXAMPLE,
+} from '../constants';
+
+export class CreatePatientDto {
+  @IsNotEmpty()
+  @ApiProperty({
+    description: CREATE_OR_UPDATE_PATIENT_NAME_DESCRIPTION,
+    example: CREATE_OR_UPDATE_PATIENT_NAME_EXAMPLE,
+  })
+  name: string;
+
+  @IsNotEmpty()
+  @IsPhoneNumber()
+  @ApiProperty({
+    description: CREATE_OR_UPDATE_PATIENT_PHONE_DESCRIPTION,
+    example: CREATE_OR_UPDATE_PATIENT_PHONE_EXAMPLE,
+  })
+  phone: string;
+
+  @IsNotEmpty()
+  @IsEmail()
+  @ApiProperty({
+    description: CREATE_OR_UPDATE_PATIENT_EMAIL_DESCRIPTION,
+    example: CREATE_OR_UPDATE_PATIENT_EMAIL_EXAMPLE,
+  })
+  email: string;
+
+  @IsNotEmpty()
+  @ApiProperty({
+    description: CREATE_OR_UPDATE_PATIENT_DOCUMENT_DESCRIPTION,
+    example: CREATE_OR_UPDATE_PATIENT_DOCUMENT_EXAMPLE,
+  })
+  document: string;
+
+  @IsNotEmpty()
+  @IsDateString()
+  @ApiProperty({
+    description: CREATE_OR_UPDATE_PATIENT_BIRTHDAY_DESCRIPTION,
+    example: CREATE_OR_UPDATE_PATIENT_BIRTHDAY_EXAMPLE,
+  })
+  birthday: string;
+
+  @IsNotEmpty()
+  @ApiProperty({
+    description: CREATE_OR_UPDATE_PATIENT_GENDER_DESCRIPTION,
+    example: CREATE_OR_UPDATE_PATIENT_GENDER_EXAMPLE,
+  })
+  gender: string;
+
+  @IsNotEmpty()
+  @ApiProperty({
+    description: CREATE_OR_UPDATE_PATIENT_HEIGHT_DESCRIPTION,
+    example: CREATE_OR_UPDATE_PATIENT_HEIGHT_EXAMPLE,
+  })
+  height: string;
+
+  @IsNotEmpty()
+  @ApiProperty({
+    description: CREATE_OR_UPDATE_PATIENT_WEIGHT_DESCRIPTION,
+    example: CREATE_OR_UPDATE_PATIENT_WEIGHT_EXAMPLE,
+  })
+  weight: string;
+}

@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { PatientsModule } from './patients/patients.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -16,6 +17,7 @@ import { AppService } from './app.service';
       entities: ['dist/**/*.entity{.ts,.js}'],
       synchronize: true,
     }),
+    PatientsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

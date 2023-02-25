@@ -1,0 +1,44 @@
+export const PATIENT_ID_DESCRIPTION = 'ID único do paciente',
+  PATIENT_NAME_DESCRIPTION = 'Nome completo do paciente',
+  PATIENT_DOCUMENT_DESCRIPTION = 'Número de documento do paciente',
+  PATIENT_PHONE_DESCRIPTION = 'Número de telefone do paciente',
+  PATIENT_EMAIL_DESCRIPTION = 'Endereço de e-mail do paciente',
+  PATIENT_BIRTHDAY_DESCRIPTION = 'Data de nascimento do paciente',
+  PATIENT_GENDER_DESCRIPTION = 'Gênero do paciente',
+  PATIENT_HEIGHT_DESCRIPTION = 'Altura do paciente',
+  PATIENT_WEIGHT_DESCRIPTION = 'Peso do paciente',
+  PATIENT_APPOINTMENTS_DESCRIPTION = 'Compromissos agendados do paciente',
+  PATIENT_CREATED_AT_DESCRIPTION = 'Data e hora de criação do paciente',
+  PATIENT_UPDATED_AT_DESCRIPTION =
+    'Data e hora da última atualização do paciente';
+
+export const PATIENT_ID_EXAMPLE = 'bc8c01ba-6c2e-43fd-a3f8-6fd18720735b',
+  PATIENT_NAME_EXAMPLE = 'João Silva',
+  PATIENT_DOCUMENT_EXAMPLE = '123.456.789-10',
+  PATIENT_PHONE_EXAMPLE = '(11) 98765-4321',
+  PATIENT_EMAIL_EXAMPLE = 'joao.silva@example.com',
+  PATIENT_BIRTHDAY_EXAMPLE = '1990-01-01',
+  PATIENT_GENDER_EXAMPLE = 'Masculino',
+  PATIENT_HEIGHT_EXAMPLE = '1.75m',
+  PATIENT_WEIGHT_EXAMPLE = '80kg',
+  PATIENT_CREATED_AT_EXAMPLE = '2022-01-01T10:00:00Z',
+  PATIENT_UPDATED_AT_EXAMPLE = '2022-02-01T15:30:00Z';
+
+export const CREATE_OR_UPDATE_PATIENT_NAME_DESCRIPTION = 'The name of the patient.',
+  CREATE_OR_UPDATE_PATIENT_PHONE_DESCRIPTION = 'The phone number of the patient.',
+  CREATE_OR_UPDATE_PATIENT_EMAIL_DESCRIPTION = 'The email address of the patient.',
+  CREATE_OR_UPDATE_PATIENT_DOCUMENT_DESCRIPTION =
+    'The document (e.g. passport, ID card) of the patient.',
+  CREATE_OR_UPDATE_PATIENT_BIRTHDAY_DESCRIPTION = 'The date of birth of the patient.',
+  CREATE_OR_UPDATE_PATIENT_GENDER_DESCRIPTION = 'The gender of the patient.',
+  CREATE_OR_UPDATE_PATIENT_HEIGHT_DESCRIPTION = 'The height of the patient.',
+  CREATE_OR_UPDATE_PATIENT_WEIGHT_DESCRIPTION = 'The weight of the patient.';
+
+export const CREATE_OR_UPDATE_PATIENT_NAME_EXAMPLE = 'John Doe',
+  CREATE_OR_UPDATE_PATIENT_PHONE_EXAMPLE = '+1-555-555-5555',
+  CREATE_OR_UPDATE_PATIENT_EMAIL_EXAMPLE = 'johndoe@example.com',
+  CREATE_OR_UPDATE_PATIENT_DOCUMENT_EXAMPLE = 'ABC1234',
+  CREATE_OR_UPDATE_PATIENT_BIRTHDAY_EXAMPLE = '1990-01-01',
+  CREATE_OR_UPDATE_PATIENT_GENDER_EXAMPLE = 'male',
+  CREATE_OR_UPDATE_PATIENT_HEIGHT_EXAMPLE = '175cm',
+  CREATE_OR_UPDATE_PATIENT_WEIGHT_EXAMPLE = '70kg';
