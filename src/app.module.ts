@@ -5,6 +5,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AppointmentsModule } from './appointments/appointments.module';
 import { PatientsModule } from './patients/patients.module';
+import { MedicalConsultationNotesModule } from './medical-consultation-notes/medical-consultation-notes.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -20,6 +21,7 @@ import { PatientsModule } from './patients/patients.module';
     }),
     PatientsModule,
     AppointmentsModule,
+    MedicalConsultationNotesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
