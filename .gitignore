@@ -7,6 +7,7 @@ node_modules/
 /.vscode
 /.devcontainer
 *.code-workspace
+Requirements.text
 
 # Vim
 [._]*.s[a-v][a-z]
@@ -42,3 +43,7 @@ yarn-error.log
 /packages/graphql
 /benchmarks/memory
 build/config\.gypi
+
+#
+dist
+.env
