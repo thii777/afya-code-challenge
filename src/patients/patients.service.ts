@@ -9,22 +9,29 @@ import { Patient } from './entities/patient.entity';
 export class PatientsService {
   constructor(
     @InjectRepository(Patient)
-    private patientRepository: Repository<Patient>,
+    private patientRepo: Repository<Patient>,
   ) {}
 
-  create(createPatientDto: CreatePatientDto): Promise<CreatePatientDto> {
-    return this.patientRepository.save(createPatientDto);
+  create(createPatientDto: CreatePatientDto): Promise<Patient> {
+    try {
+      return this.patientRepo.save(createPatientDto);
+    } catch (error) {
+      if (error.message.includes('External service unavailable')) {
+        return Promise.reject(error);
+      }
+      return error;
+    }
   }
 
   findAll(): Promise<Patient[]> {
-    return this.patientRepository.find();
+    return this.patientRepo.find();
   }
 
   update(id: any, updatePatientDto: UpdatePatientDto): Promise<UpdateResult> {
-    return this.patientRepository.update(id, updatePatientDto);
+    return this.patientRepo.update(id, updatePatientDto);
   }
 
   remove(id: any): Promise<DeleteResult> {
-    return this.patientRepository.delete(id);
+    return this.patientRepo.delete(id);
   }
 }
