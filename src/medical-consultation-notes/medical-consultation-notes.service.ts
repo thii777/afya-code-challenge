@@ -10,17 +10,17 @@ import { MEDICAL_CONSUTION_NOTE_NOT_FOUND } from './errors.constants';
 export class MedicalConsultationNotesService {
   constructor(
     @InjectRepository(MedicalConsultationNote)
-    private medicalConsultationNoteRepository: Repository<MedicalConsultationNote>,
+    private medicalConsultationNoteRepo: Repository<MedicalConsultationNote>,
 
     @InjectRepository(Appointment)
-    private appointmentRepository: Repository<Appointment>,
+    private appointmentRepo: Repository<Appointment>,
   ) {}
 
   async create(
     createMedicalConsultationNoteDto: CreateMedicalConsultationNoteDto,
   ) {
     try {
-      const appointment = await this.appointmentRepository.findOne({
+      const appointment = await this.appointmentRepo.findOne({
         where: {
           id: createMedicalConsultationNoteDto.appointmentId,
         },
@@ -34,16 +34,19 @@ export class MedicalConsultationNotesService {
         throw error;
       }
 
-      return await this.medicalConsultationNoteRepository.save(
+      return await this.medicalConsultationNoteRepo.save(
         createMedicalConsultationNoteDto,
       );
     } catch (error) {
+      if (error.message.includes('External service unavailable')) {
+        return Promise.reject(error);
+      }
       return error;
     }
   }
 
   async findAllMedicalConsultationNotes(patientId: any) {
-    const medicalConsultationNotes = this.medicalConsultationNoteRepository
+    const medicalConsultationNotes = this.medicalConsultationNoteRepo
       .createQueryBuilder('medicalConsultationNote')
       .leftJoinAndSelect('medicalConsultationNote.appointmentId', 'appointment')
       .where('appointment.patientId = :patientId', { patientId })
