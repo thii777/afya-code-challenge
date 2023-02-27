@@ -7,7 +7,14 @@ import {
   Post,
   Put,
 } from '@nestjs/common';
-import { ApiBadRequestResponse, ApiBody, ApiNotFoundResponse, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBadRequestResponse,
+  ApiBody,
+  ApiNotFoundResponse,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { DeleteResult, UpdateResult } from 'typeorm';
 import { CreatePatientDto } from './dto/create-patient.dto';
 import { UpdatePatientDto } from './dto/update-patient.dto';
@@ -19,8 +26,8 @@ import { PatientsService } from './patients.service';
 export class PatientsController {
   constructor(private readonly patientsService: PatientsService) {}
 
-  @ApiOperation({ summary: 'Create a new patient' })
   @Post()
+  @ApiOperation({ summary: 'Create a new patient' })
   @ApiResponse({
     status: 201,
     description: 'Patient created successfully..',
@@ -30,12 +37,11 @@ export class PatientsController {
     description: 'Validation failed or patient not found.',
   })
   @ApiBody({ type: CreatePatientDto })
-  create(
-    @Body() createPatientDto: CreatePatientDto,
-  ): Promise<CreatePatientDto> {
+  create(@Body() createPatientDto: CreatePatientDto): Promise<Patient> {
     return this.patientsService.create(createPatientDto);
   }
 
+  @Get()
   @ApiOperation({ summary: 'List patients' })
   @ApiResponse({
     status: 200,
@@ -45,13 +51,12 @@ export class PatientsController {
   @ApiBadRequestResponse({
     description: 'Validation failed or patient not found.',
   })
-  @Get()
   findAll(): Promise<Patient[]> {
     return this.patientsService.findAll();
   }
 
-  @ApiOperation({ summary: 'Update an patient' })
   @Put(':id')
+  @ApiOperation({ summary: 'Update an patient' })
   @ApiResponse({
     status: 200,
     description: 'Patient updated successfully..',
@@ -71,11 +76,11 @@ export class PatientsController {
     return this.patientsService.update(id, updatePatientDto);
   }
 
+  @Delete(':id')
   @ApiOperation({ summary: 'Delete an patient' })
   @ApiNotFoundResponse({
     description: 'Patient not found.',
   })
-  @Delete(':id')
   remove(@Param('id') id: string): Promise<DeleteResult> {
     return this.patientsService.remove(id);
   }

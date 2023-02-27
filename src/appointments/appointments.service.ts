@@ -73,7 +73,6 @@ export class AppointmentsService {
   }
 
   async update(id: any, _updateAppointmentDto: UpdateAppointmentDto) {
-    console.log(id, _updateAppointmentDto, 'update appoint');
     return await this.appointmentRepository.update(id, _updateAppointmentDto);
   }
 

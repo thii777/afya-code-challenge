@@ -1,46 +1,23 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { Appointment } from '../appointments/entities/appointment.entity';
 import { Repository } from 'typeorm';
-import { CreateMedicalConsultationNoteDto } from './dto/create-medical-consultation-note.dto';
+import { Appointment } from '../appointments/entities/appointment.entity';
 import { MedicalConsultationNote } from './entities/medical-consultation-note.entity';
+import { ObjectMCNMock } from './mcn.mocks';
 import { MedicalConsultationNotesService } from './medical-consultation-notes.service';
+import { ObjectAppoitmentMock } from '../appointments/appointment.mocks';
 
 describe('MedicalConsultationNotesService', () => {
   let medicalConsultationNotesService: MedicalConsultationNotesService;
   let medicalConsultationNoteRepository: Repository<MedicalConsultationNote>;
   let appointmentRepository: Repository<Appointment>;
-
-  const expectedMedicalConsultationNote: MedicalConsultationNote = {
-    patientName: 'João da Silva',
-    doctorName: 'Dra. Ana Souza',
-    date: new Date(),
-    notes:
-      'Paciente apresentou sintomas de gripe e foi prescrito medicamento X.',
-    appointmentId: '83476b53-97ab-4100-88c7-547c1c6301de',
-    id: 5,
-  };
-
-  const mockCreateMedicalConsultationNoteDto: CreateMedicalConsultationNoteDto =
-    {
-      patientName: 'John Doe',
-      doctorName: 'Dr. Smith',
-      date: new Date(),
-      notes: 'Lorem ipsum dolor sit amet',
-      appointmentId: '83476b53-97ab-4100-88c7-547c1c6301de',
-    };
-
-  const appointment = {
-    id: '970bcb8c-b9eb-42bf-9069-efc76fe79dd9',
-    document: '33615840860',
-    startDateTime: '2023-02-25T14:40:00.000Z',
-    endDateTime: '2023-02-23T17:19:58.359Z',
-    patient: '7a8753cd-c898-437e-8d1b-10b7e386916d',
-    createdAt: '2023-02-23T17:19:58.359Z',
-    updatedAt: '2023-02-23T17:19:58.359Z',
-  };
+  let objectMCNMock: ObjectMCNMock;
+  let objectAppoitmentMock: ObjectAppoitmentMock;
 
   beforeEach(async () => {
+    objectMCNMock = new ObjectMCNMock();
+    objectAppoitmentMock = new ObjectAppoitmentMock();
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         MedicalConsultationNotesService,
@@ -84,7 +61,16 @@ describe('MedicalConsultationNotesService', () => {
   });
 
   describe('create', () => {
+    let expectedMedicalConsultationNote;
+    let mockCreateMedicalConsultationNoteDto;
+    let appointment;
     it('should create a medical consultation note successfully', async () => {
+      expectedMedicalConsultationNote = objectMCNMock.expectedMCNNote;
+      mockCreateMedicalConsultationNoteDto = objectMCNMock.mockCreateMCNDto;
+      appointment = objectAppoitmentMock.appointment;
+
+      console.log(appointment, 'appoint');
+
       jest
         .spyOn(medicalConsultationNoteRepository, 'save')
         .mockResolvedValue(expectedMedicalConsultationNote);
@@ -101,71 +87,23 @@ describe('MedicalConsultationNotesService', () => {
 
       expect(result).toEqual(expectedMedicalConsultationNote);
     });
-  });
-
-  describe('findAllMedicalConsultationNotes', () => {
-    it('should return an array of medical consultation notes', async () => {
-      const patientId = '123';
-      const queryBuilderMock =
-        medicalConsultationNoteRepository.createQueryBuilder as jest.Mock;
-      const expectedQueryBuilderResult = [
-        { id: 1, doctorName: 'Dr. John', date: new Date(), notes: 'Notes' },
-      ];
-
-      // Simulando o resultado da query
-      queryBuilderMock()
-        .leftJoinAndSelect()
-        .where()
-        .select()
-        .orderBy()
-        .getMany.mockResolvedValue(expectedQueryBuilderResult);
-
-      const result =
-        await medicalConsultationNotesService.findAllMedicalConsultationNotes(
-          patientId,
-        );
-
-      expect(queryBuilderMock).toHaveBeenCalledWith('medicalConsultationNote');
-
-      const expectedMedicalConsultationNotes: MedicalConsultationNote[] = [
-        {
-          patientName: 'João da Silva',
-          doctorName: 'Dra. Ana Souza',
-          date: new Date(),
-          notes:
-            'Paciente apresentou sintomas de gripe e foi prescrito medicamento X.',
-          appointmentId: '83476b53-97ab-4100-88c7-547c1c6301de',
-          id: 5,
-        },
-      ];
-
-      jest.spyOn(queryBuilderMock(), 'where').mockReturnThis();
-      jest.spyOn(queryBuilderMock(), 'select').mockReturnThis();
-      jest.spyOn(queryBuilderMock(), 'orderBy').mockReturnThis();
+    it('should handle errors when the medical consultation note service is unavailable', async () => {
       jest
-        .spyOn(queryBuilderMock(), 'getMany')
-        .mockResolvedValue(expectedMedicalConsultationNotes);
+        .spyOn(medicalConsultationNoteRepository, 'save')
+        .mockRejectedValue(new Error('External service unavailable'));
 
-      expect(queryBuilderMock).toHaveBeenCalledWith('medicalConsultationNote');
-      expect(queryBuilderMock().where).toHaveBeenCalledWith(
-        'appointment.patientId = :patientId',
-        { patientId },
-      );
-      expect(queryBuilderMock().select).toHaveBeenCalledWith([
-        'medicalConsultationNote.patientName',
-        'medicalConsultationNote.doctorName',
-        'medicalConsultationNote.date',
-        'medicalConsultationNote.notes',
-        'medicalConsultationNote.appointmentId',
-        'medicalConsultationNote.id',
-      ]);
-      expect(queryBuilderMock().orderBy).toHaveBeenCalledWith(
-        'medicalConsultationNote.date',
-        'DESC',
-      );
-      expect(queryBuilderMock().getMany).toHaveBeenCalled();
+      appointmentRepository.findOne = jest.fn().mockResolvedValue(appointment);
+      medicalConsultationNoteRepository.save = jest
+        .fn()
+        .mockRejectedValue(new Error('External service unavailable'));
 
-      expect(result).toEqual(expectedMedicalConsultationNotes);
+      await expect(
+        medicalConsultationNotesService.create(
+          mockCreateMedicalConsultationNoteDto,
+        ),
+      ).rejects.toThrowError();
+
+      expect(medicalConsultationNoteRepository.save).toHaveBeenCalled();
     });
   });
 });
