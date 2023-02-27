@@ -69,8 +69,6 @@ describe('MedicalConsultationNotesService', () => {
       mockCreateMedicalConsultationNoteDto = objectMCNMock.mockCreateMCNDto;
       appointment = objectAppoitmentMock.appointment;
 
-      console.log(appointment, 'appoint');
-
       jest
         .spyOn(medicalConsultationNoteRepository, 'save')
         .mockResolvedValue(expectedMedicalConsultationNote);
