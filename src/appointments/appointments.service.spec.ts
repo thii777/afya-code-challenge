@@ -1,71 +1,27 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CreateAppointmentDto } from '../appointments/dto/create-appointment.dto';
 import { Appointment } from '../appointments/entities/appointment.entity';
 import { Patient } from '../patients/entities/patient.entity';
+import { ObjectPatientMock } from '../patients/patients.mocks';
+import { ObjectAppoitmentMock } from './appointment.mocks';
+import { ObjectGeneralMock } from '../mocks';
 import { AppointmentsService } from './appointments.service';
-import { UpdateAppointmentDto } from './dto/update-appointment.dto';
+import * as checkAppointmentAvailability from './appointment.helper';
 
 describe('AppointmentsService', () => {
   let appointmentService: AppointmentsService;
   let appointmentRepository: Repository<Appointment>;
   let patientRepository: Repository<Patient>;
-
-  const createAppointmentDto: CreateAppointmentDto = {
-    document: '12345678901',
-    details: '1199199258',
-    startDateTime: new Date().toString(),
-  };
-
-  const updateAppointmentDto: UpdateAppointmentDto = {
-    document: '12345678901',
-    details: '1199199258',
-  };
-
-  const uuidMock = '970bcb8c-b9eb-42bf-9069-efc76fe79dd9';
-
-  const patient = new Patient();
-  patient.id = '91bf8fe2-3e78-4747-ac8d-68a88c390399';
-
-  const appointment = new Appointment();
-  Object.assign(appointment, createAppointmentDto);
-  appointment.patientId = '91bf8fe2-3e78-4747-ac8d-68a88c390399';
-
-  const expectedAppointment: Appointment = {
-    id: 'a308d5c5-e5b1-40a2-8b8d-7d142bdf5a31',
-    document: '12345678901',
-    startDateTime: new Date('2023-02-27 14:40:00.000Z'),
-    endDateTime: expect.any(Date),
-    patientId: '91bf8fe2-3e78-4747-ac8d-68a88c390399',
-    MedicalConsultationNotes: [],
-    createdAt: new Date('2023-02-27 14:40:00.000Z'),
-    updatedAt: new Date('2023-02-27 14:40:00.000Z'),
-  };
-
-  const expectUpdateAppointment = {
-    generatedMaps: [],
-    raw: [],
-    affected: 1,
-  };
-
-  const expectRemoveAppointment = {
-    ...expectUpdateAppointment,
-  };
-
-  const appointments = [
-    {
-      id: '970bcb8c-b9eb-42bf-9069-efc76fe79dd9',
-      document: '33615840860',
-      startDateTime: '2023-02-25T14:40:00.000Z',
-      endDateTime: '2023-02-23T17:19:58.359Z',
-      patient: '7a8753cd-c898-437e-8d1b-10b7e386916d',
-      createdAt: '2023-02-23T17:19:58.359Z',
-      updatedAt: '2023-02-23T17:19:58.359Z',
-    },
-  ];
+  let objectAppoitmentMock: ObjectAppoitmentMock;
+  let objectGeneralMock: ObjectGeneralMock;
+  let objectPatientMock: ObjectPatientMock;
 
   beforeEach(async () => {
+    objectAppoitmentMock = new ObjectAppoitmentMock();
+    objectGeneralMock = new ObjectGeneralMock();
+    objectPatientMock = new ObjectPatientMock();
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         AppointmentsService,
@@ -98,7 +54,27 @@ describe('AppointmentsService', () => {
   });
 
   describe('create', () => {
+    let expectedAppointment;
+    let createAppointmentDto;
+    let patientId;
     it('should create an appointment successfully', async () => {
+      expectedAppointment = objectAppoitmentMock.expectedAppointment;
+      createAppointmentDto = objectAppoitmentMock.createAppointmentDto;
+      patientId = objectPatientMock.patientId;
+      const patient = new Patient();
+      patient.id = patientId;
+
+      const endDateTime = new Date(createAppointmentDto.endDateTime);
+
+      const appointment = new Appointment();
+      Object.assign(appointment, createAppointmentDto);
+      appointment.patientId = patientId;
+      appointment.endDateTime = endDateTime;
+
+      jest
+        .spyOn(checkAppointmentAvailability, 'checkAppointmentAvailability')
+        .mockResolvedValue(true);
+
       jest
         .spyOn(appointmentRepository, 'save')
         .mockResolvedValue(expectedAppointment);
@@ -117,7 +93,20 @@ describe('AppointmentsService', () => {
   });
 
   describe('update', () => {
+    let expectUpdateAppointment;
+    let updateAppointmentDto;
+    let uuidMock;
+    let patientId;
+    let patient;
+
     it('should update an appointment successfully', async () => {
+      expectUpdateAppointment = objectGeneralMock.objectAffected;
+      updateAppointmentDto = objectAppoitmentMock.updateAppointmentDto;
+      uuidMock = objectGeneralMock.uuidMock;
+      patientId = objectPatientMock.patientId;
+      patient = new Patient();
+      patient.id = patientId;
+
       jest
         .spyOn(appointmentRepository, 'update')
         .mockResolvedValue(expectUpdateAppointment);
@@ -137,18 +126,52 @@ describe('AppointmentsService', () => {
 
       expect(result).toEqual(expectUpdateAppointment);
     });
+
+    it('should reject with an error if appointmentRepository.update throws an error', async () => {
+      patient = new Patient();
+      patient.id = patientId;
+      const error = new Error('Database error');
+
+      jest.spyOn(appointmentRepository, 'update').mockRejectedValue(error);
+      patientRepository.findOne = jest.fn().mockResolvedValue(patient);
+      appointmentRepository.findOne = jest.fn().mockResolvedValue(undefined);
+
+      await expect(
+        appointmentService.update(uuidMock, updateAppointmentDto),
+      ).rejects.toThrow('Database error');
+
+      expect(appointmentRepository.update).toHaveBeenCalledWith(
+        uuidMock,
+        updateAppointmentDto,
+      );
+    });
   });
 
   describe('findAll', () => {
+    let appointments;
     it('should return an array of appointments', async () => {
+      appointments = objectAppoitmentMock.appointment;
       appointmentRepository.find = jest.fn().mockResolvedValue(appointments);
 
       await expect(appointmentService.findAll()).resolves.toEqual(appointments);
     });
+
+    it('should reject with an error if appointmentRepository.find throws an error', async () => {
+      const error = new Error('Database error');
+      appointmentRepository.find = jest.fn().mockRejectedValue(error);
+
+      await expect(appointmentService.findAll()).rejects.toThrow(
+        'Database error',
+      );
+    });
   });
 
   describe('remove', () => {
+    let uuidMock;
+    let expectRemoveAppointment;
     it('should remove an appointment successfully', async () => {
+      uuidMock = objectGeneralMock.uuidMock;
+      expectRemoveAppointment = objectGeneralMock.objectAffected;
       jest
         .spyOn(appointmentRepository, 'delete')
         .mockResolvedValue(expectRemoveAppointment);
@@ -158,6 +181,17 @@ describe('AppointmentsService', () => {
       expect(appointmentRepository.delete).toHaveBeenCalledWith(uuidMock);
 
       expect(result).toEqual(expectRemoveAppointment);
+    });
+
+    it('should reject with an error if appointmentRepository.delete throws an error', async () => {
+      const error = new Error('Database error');
+      jest.spyOn(appointmentRepository, 'delete').mockRejectedValue(error);
+
+      await expect(appointmentService.remove(uuidMock)).rejects.toThrow(
+        'Database error',
+      );
+
+      expect(appointmentRepository.delete).toHaveBeenCalledWith(uuidMock);
     });
   });
 });
