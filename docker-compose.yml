@@ -1,18 +1,18 @@
 version: "3.7"
 
 services:
-  app:
-    build: 
-      context: .
-      dockerfile: Dockerfile.dev
-    command: npm run start:dev
-    ports:
-      - "3000:3000"
-    depends_on:
-      - db
-    volumes:
-      - .:/usr/appy
-    restart: on-failure
+  # app:
+  #   build: 
+  #     context: .
+  #     dockerfile: Dockerfile.dev
+  #   command: npm run start:dev
+  #   ports:
+  #     - "3000:3000"
+  #   depends_on:
+  #     - db
+  #   volumes:
+  #     - .:/usr/appy
+  #   restart: on-failure
   db:
     image: 'postgres:latest'
     container_name: "afya-database"
